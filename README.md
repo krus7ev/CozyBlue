@@ -16,3 +16,9 @@ Not much progress was made as most effort was put into converting `cloudfail.py`
 ## 3.4 - Excessive Ads
 
 At a conceptual stage using filters from filters.txt
+
+## 3.2.2 Identification of ownership/affiliation cross multiple websites with different domains and visual styles without using structured or semi-structured data from the HTML/CSS/JS
+
+The main idea is to extract meaningful information from html structure By meaningful we assume css selectors(class names, ids, tags) and assets (js, css, etc.) We then encode them and run similarity. Jaro is prefered as it preserves original order which is also important.
+- parse.py implements this idea above
+- sorted_results.py just sorts the results by similarity so we can easily pick threshold.
