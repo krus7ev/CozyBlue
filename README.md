@@ -12,3 +12,7 @@ As a result 160 hits were made showing IP address discoveries different to the p
 The output hits' ip address traces from bot `dnsdumpster` and `crimeflare` stages are stored raw in a list of the same length as the input dataframe to preserve indentation. 
 
 Not much progress was made as most effort was put into converting `cloudfail.py`. Future steps must include results validation by comparison with outer CloudFlare adresses, claimed address databases and comparison of their respective geolocations.
+
+## 3.4 - Excessive Ads
+
+At a conceptual stage using filters from filters.txt
