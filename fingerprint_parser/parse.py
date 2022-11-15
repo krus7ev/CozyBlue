@@ -39,37 +39,16 @@ class TagFeatures(object):
         return [SingleValueAttribute('id')]
 
 class Fingerprint(object):
-    def __init__(self, encoder, tag_features):
-        self._encoder = encoder
+    def __init__(self, tag_features):
         self._tag_features = tag_features
 
     def features(self, url, document):
         return [] if not hasattr(document, 'body') else self.get(url, document.body)
 
     def get(self, url, element):
-        features = [self._encoder.add(feature) for feature in self._tag_features.extract(url, element)]
+        features = [hash(feature) for feature in self._tag_features.extract(url, element)]
         children_features = flatten([self.get(url, child) for child in element.children if not isinstance(child, bs4.element.NavigableString)])
         return features + list(children_features)
-
-class Encoder(object):
-    def __init__(self):
-        self._data = {}
-
-    def id(self, code):
-        if not code in self._data:
-            self._data[code] = len(self._data)
-        return self._data[code]
-
-class Signature(object):
-    def __init__(self, items, encoder):
-        self._items = items
-        self._encoder = encoder
-
-    def add(self, item):
-        item_id = self._encoder.id(item)
-        if len(self._items) == 0 or item_id != self._items[-1]:
-            self._items.append(item_id)
-        return item_id
 
 class SingleValueAttribute(object):
     def __init__(self, attribute_name, extra_features=[]):
@@ -93,7 +72,7 @@ class SingleValueAttribute(object):
         return "{}.{}".format(element.name, value)
 
 
-finger_print = Fingerprint(Signature([], Encoder()), TagFeatures({
+finger_print = Fingerprint(TagFeatures({
     'script': [SingleValueAttribute('src', [script_features]), SingleValueAttribute('id')]
 }))
 features = {}
