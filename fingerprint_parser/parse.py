@@ -1,5 +1,5 @@
 import itertools
-import jaro
+import jarowinkler
 import bs4
 import glob
 import os.path as path
@@ -85,5 +85,5 @@ for filename, url in files_iterator(data_dir):
         print (filename)
 
 similarity = ["first,second,similarity"]
-similarity.extend(["{},{},{}".format(site1, site2, jaro.jarowinkler_similarity(features[site1], features[site2])) for site1, site2 in itertools.combinations(features.keys(), 2)])
+similarity.extend(["{},{},{}".format(site1, site2, jarowinkler.jarowinkler_similarity(features[site1], features[site2])) for site1, site2 in itertools.combinations(features.keys(), 2)])
 write("similarity.csv", "\n".join(similarity))
