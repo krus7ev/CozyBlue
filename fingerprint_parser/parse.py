@@ -24,6 +24,8 @@ def script_features(value, url, dom_element):
 def files_iterator(data_dir):
     return ((filename, extract_url(filename)) for filename in glob.glob(data_dir + "*"))
 
+def raw_value(value, url, dom_element):
+    return "{}.{}".format(dom_element.name, value)
 
 class Fingerprint(object):
     def __init__(self, encoder, tag_features):
@@ -39,25 +41,18 @@ class Fingerprint(object):
         return features + list(children_features)
 
 class SingleValueAttribute(object):
-    def __init__(self, attribute_name, extra_features=[]):
+    def __init__(self, attribute_name, features=[raw_value]):
         self._attribute_name = attribute_name
-        self._extra_features = extra_features
+        self._features = features
 
     def features(self, url, dom_element):
         return self._all_features(url, dom_element) if self._valid(dom_element) else []
 
     def _all_features(self, url, dom_element):
-        return (feature(dom_element.attrs[self._attribute_name], url, dom_element) for feature in self._feature_extractors)
+        return (feature(dom_element.attrs[self._attribute_name], url, dom_element) for feature in self._features)
 
     def _valid(self, dom_element):
         return self._attribute_name in dom_element.attrs
-
-    @property
-    def _feature_extractors(self):
-        return [self._value] + self._extra_features
-
-    def _value(self, value, url, element):
-        return "{}.{}".format(element.name, value)
 
 class TagFeatures(object):
     def __init__(self, handlers, default=[SingleValueAttribute('id')]):
@@ -75,8 +70,8 @@ def identity(x): return x
 def remove_tag(x): return x.split(".", 1)[1]
 #finger_print = Fingerprint(identity, TagFeatures({ 'script': [SingleValueAttribute('src')] }, []))
 #finger_print = Fingerprint(remove_tag, TagFeatures({ 'link': [SingleValueAttribute('href')] }, []))
-finger_print = Fingerprint(hash, TagFeatures({
-    'script': [SingleValueAttribute('src', [script_features])],
+finger_print = Fingerprint(identity, TagFeatures({
+    'script': [SingleValueAttribute('src', [raw_value, script_features])],
     'link': [SingleValueAttribute('href')]
 }))
 features = {}
