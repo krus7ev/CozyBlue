@@ -1,0 +1,16 @@
+{
+  "name": "ad-scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dev.js",
+  "scripts": {
+    "dev": "node dev.cjs"
+  },
+  "type": "module",
+  "author": "soclemys",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^19.2.2",
+    "uuid": "^9.0.0"
+  }
+}
