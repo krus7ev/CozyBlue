@@ -86,6 +86,6 @@ for filename, url in files_iterator(data_dir):
 c = cluster.create(2, 0.5)
 for site, features in features.items():
     c.index(features, site)
-c.dump("output")
+c.dump("output", 2) # dump threshold
 #similarity.extend(["{},{},{}".format(site1, site2, jarowinkler.jarowinkler_similarity(features[site1], features[site2])) for site1, site2 in itertools.combinations(features.keys(), 2)])
 #write("similarity.csv", "\n".join(similarity))
