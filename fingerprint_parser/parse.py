@@ -1,8 +1,9 @@
 import itertools
-import jarowinkler
 import bs4
 import glob
 import os.path as path
+import numpy as np
+import cluster
 
 def flatten(list_of_lists):
     return itertools.chain.from_iterable(list_of_lists)
@@ -26,6 +27,7 @@ def files_iterator(data_dir):
 
 def raw_value(value, url, dom_element):
     return "{}.{}".format(dom_element.name, value)
+
 
 class Fingerprint(object):
     def __init__(self, encoder, tag_features):
@@ -70,21 +72,20 @@ def identity(x): return x
 def remove_tag(x): return x.split(".", 1)[1]
 #finger_print = Fingerprint(identity, TagFeatures({ 'script': [SingleValueAttribute('src')] }, []))
 #finger_print = Fingerprint(remove_tag, TagFeatures({ 'link': [SingleValueAttribute('href')] }, []))
-finger_print = Fingerprint(identity, TagFeatures({
-    'script': [SingleValueAttribute('src', [raw_value, script_features])],
-    'link': [SingleValueAttribute('href')]
-}))
+finger_print = Fingerprint(hash, TagFeatures({}))
 features = {}
+
 
 data_dir = "../data/html/"
 for filename, url in files_iterator(data_dir):
     try:
         features[url] = finger_print.features(url, bs4.BeautifulSoup(read(filename), "html.parser"))
-        print (features[url])
-        break
     except:
         print (filename)
 
-similarity = ["first,second,similarity"]
-similarity.extend(["{},{},{}".format(site1, site2, jarowinkler.jarowinkler_similarity(features[site1], features[site2])) for site1, site2 in itertools.combinations(features.keys(), 2)])
-write("similarity.csv", "\n".join(similarity))
+c = cluster.create(2, 0.5)
+for site, features in features.items():
+    c.index(features, site)
+c.dump("output")
+#similarity.extend(["{},{},{}".format(site1, site2, jarowinkler.jarowinkler_similarity(features[site1], features[site2])) for site1, site2 in itertools.combinations(features.keys(), 2)])
+#write("similarity.csv", "\n".join(similarity))
