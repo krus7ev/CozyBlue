@@ -2,7 +2,7 @@ import numpy as np
 import jarowinkler
 
 class KSimilarityCluster(object):
-    def __init__(self, k=2, partitions=[]):
+    def __init__(self, k=1, partitions=[]):
         self._k = k
         self._partitions = partitions
 
@@ -15,8 +15,8 @@ class KSimilarityCluster(object):
         if len(indexes) > 1:
             self._partitions.merge(indexes)
 
-    def dump(self, dirname):
-        for index, partition in enumerate(self._partitions):
+    def dump(self, dirname, threshold):
+        for index, partition in self._partitions.filter(threshold):
             write("{}/{}.data".format(dirname, index), partition)
 
 
@@ -39,8 +39,8 @@ class Partitions(object):
     def add_item(self, index, item):
         self._partitions[index].add(item)
 
-    def __iter__(self):
-        return iter(self._partitions)
+    def filter(self, threshold):
+        return ((index, partition) for index, partition in enumerate(self._partitions) if len(partition) >= threshold)
 
     def merge(self, indexes):
         for index in indexes[1:]:
