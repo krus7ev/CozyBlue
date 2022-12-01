@@ -12,7 +12,7 @@ class MinHash(object):
     def signature(self, values, old_signature=None):
         a, b = self._permutations
         hashes = np.bitwise_and(((np.array(values, dtype=np.uint64) * np.tile(a, (len(values), 1)).T).T + b) % _mersenne_prime, _max_hash)
-        if old_signature: hashes = np.vstack([hashes, old_signature])
+        if old_signature is not None: hashes = np.vstack([hashes, old_signature])
         return hashes.min(axis=0)
 
     @classmethod
