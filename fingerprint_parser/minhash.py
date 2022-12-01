@@ -17,7 +17,7 @@ class MinHash(object):
 
     @classmethod
     def create(cls, permutations_count, generator):
-        return cls(np.array([(generator.randint(1, _mersenne_prime, dtype=np.uint64), generator.randint(0, _mersenne_prime, dtype=np.uint64)) for _ in range(permutations_count) ], dtype=np.uint64).T)
+        return cls(generator.randint(1, _mersenne_prime, (2, permutations_count), dtype=np.uint64))
 
 def my_hash(value):
     return ctypes.c_size_t(hash(value)).value
