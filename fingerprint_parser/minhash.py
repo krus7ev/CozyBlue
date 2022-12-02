@@ -12,8 +12,11 @@ class MinHash(object):
     def signature(self, values, old_signature=None):
         a, b = self._permutations
         hashes = np.bitwise_and(((np.array(values, dtype=np.uint64) * np.tile(a, (len(values), 1)).T).T + b) % _mersenne_prime, _max_hash)
-        if old_signature is not None: hashes = np.vstack([hashes, old_signature])
+        hashes = np.vstack([hashes, self._base_signature(old_signature)])
         return hashes.min(axis=0)
+
+    def _base_signature(self, signature):
+        return signature if signature is not None else np.full(self._permutations.shape[1], _max_hash)
 
     @classmethod
     def create(cls, permutations_count, generator):
@@ -25,10 +28,9 @@ def my_hash(value):
 def create(projections):
     return MinHash.create(projections, np.random.RandomState(42))
 
-# mh = MinHash.create(4, np.random.RandomState(1337))
-# hashes = list(map(lambda x: my_hash(x.encode("utf8")), ["foo", "bar", "baz", "asd", "dsa", "sdf", "fds"]))
-# sig1 = mh.signature(hashes)
-# print (sig1)
+#hashes = list(map(lambda x: my_hash(x.encode("utf8")), ["foo", "bar", "baz", "asd", "dsa", "sdf", "fds"]))
+#sig1 = mh.signature(hashes)
+#print (sig1)
 # hashes2 = list(map(lambda x: my_hash(x.encode("utf8")), ["foo", "bar", "ddd", "dsa", "fds", "aaa", "asd", "sss"]))
 # sig2 = mh.signature(hashes2)
 # print (sig2)
