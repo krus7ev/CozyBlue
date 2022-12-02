@@ -1,9 +1,12 @@
+import ctypes
 import itertools
 import bs4
 import glob
 import os.path as path
 import numpy as np
 import cluster
+import lsh
+import pickle
 
 def flatten(list_of_lists):
     return itertools.chain.from_iterable(list_of_lists)
@@ -67,12 +70,16 @@ class TagFeatures(object):
     def _features(self, url, element, extractors):
         return flatten([extract.features(url, element) for extract in extractors])
 
+def my_hash(value):
+    return ctypes.c_size_t(hash(value)).value
+
+
 
 def identity(x): return x
 def remove_tag(x): return x.split(".", 1)[1]
 #finger_print = Fingerprint(identity, TagFeatures({ 'script': [SingleValueAttribute('src')] }, []))
 #finger_print = Fingerprint(remove_tag, TagFeatures({ 'link': [SingleValueAttribute('href')] }, []))
-finger_print = Fingerprint(hash, TagFeatures({}))
+finger_print = Fingerprint(my_hash, TagFeatures({}))
 features = {}
 
 
@@ -83,9 +90,17 @@ for filename, url in files_iterator(data_dir):
     except:
         print (filename)
 
-c = cluster.create(2, 0.5)
-for site, features in features.items():
-    c.index(features, site)
-c.dump("output", 2) # dump threshold
+def save_object(filename, python_object):
+    with open(filename, 'wb') as f:
+        pickle.dump(python_object, f)
+
+save_object("features.pkz", features)
+
+c = lsh.create(64, 0.2)
+for site, features_vector in features.items():
+    c.index(features_vector, site)
+
+save_object("lsh.pkz", c)
+
 #similarity.extend(["{},{},{}".format(site1, site2, jarowinkler.jarowinkler_similarity(features[site1], features[site2])) for site1, site2 in itertools.combinations(features.keys(), 2)])
 #write("similarity.csv", "\n".join(similarity))
