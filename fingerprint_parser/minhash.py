@@ -7,16 +7,14 @@ _max_hash = np.uint64((1 << 32) - 1)
 
 class MinHash(object):
     def __init__(self, permutations):
-        self._permutations = permutations
+        self._a, self._b = permutations
+        self._default_signature = np.full(permutations.shape[1], _max_hash)
 
     def signature(self, values, old_signature=None):
-        a, b = self._permutations
-        hashes = np.bitwise_and(((np.array(values, dtype=np.uint64) * np.tile(a, (len(values), 1)).T).T + b) % _mersenne_prime, _max_hash)
-        hashes = np.vstack([hashes, self._base_signature(old_signature)])
-        return hashes.min(axis=0)
-
-    def _base_signature(self, signature):
-        return signature if signature is not None else np.full(self._permutations.shape[1], _max_hash)
+        return np.vstack([
+            (np.outer(np.array(values, dtype=np.uint64), self._a) + self._b) % _mersenne_prime & _max_hash,
+            self._default_signature if old_signature is None else old_signature,
+        ]).min(axis=0)
 
     @classmethod
     def create(cls, permutations_count, generator):
