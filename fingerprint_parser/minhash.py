@@ -1,4 +1,4 @@
-import ctypes
+import sys
 import numpy as np
 
 _mersenne_prime = np.uint64((1 << 61) - 1)
