@@ -23,8 +23,8 @@ class MinHash(object):
 def my_hash(value):
     return hash(value) % ((sys.maxsize + 1) * 2)
 
-def create(projections):
-    return MinHash.create(projections, np.random.RandomState(42))
+def create(projections, seed=42):
+    return MinHash.create(projections, np.random.RandomState(seed))
 
 #hashes = list(map(lambda x: my_hash(x.encode("utf8")), ["foo", "bar", "baz", "asd", "dsa", "sdf", "fds"]))
 #sig1 = mh.signature(hashes)
