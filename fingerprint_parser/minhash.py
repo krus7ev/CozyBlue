@@ -21,7 +21,7 @@ class MinHash(object):
         return cls(generator.randint(1, _mersenne_prime, (2, permutations_count), dtype=np.uint64))
 
 def my_hash(value):
-    return ctypes.c_size_t(hash(value)).value
+    return hash(value) % ((sys.maxsize + 1) * 2)
 
 def create(projections):
     return MinHash.create(projections, np.random.RandomState(42))
