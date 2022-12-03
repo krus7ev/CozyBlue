@@ -11,10 +11,10 @@ class MinHash(object):
         self._default_signature = np.full(permutations.shape[1], _max_hash)
 
     def signature(self, values, old_signature=None):
-        return np.vstack([
-            (np.outer(np.array(values, dtype=np.uint64), self._a) + self._b) % _mersenne_prime & _max_hash,
-            self._default_signature if old_signature is None else old_signature,
-        ]).min(axis=0)
+        return np.minimum(
+            ((np.outer(np.array(values, dtype=np.uint64), self._a) + self._b) % _mersenne_prime & _max_hash).min(axis=0),
+            self._default_signature if old_signature is None else old_signature)
+
 
     @classmethod
     def create(cls, permutations_count, generator):
