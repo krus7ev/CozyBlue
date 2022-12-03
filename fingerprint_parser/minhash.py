@@ -32,9 +32,5 @@ def create(projections):
 # hashes2 = list(map(lambda x: my_hash(x.encode("utf8")), ["foo", "bar", "ddd", "dsa", "fds", "aaa", "asd", "sss"]))
 # sig2 = mh.signature(hashes2)
 # print (sig2)
-# #
-# #
-# xor = sig1 ^ sig2
-# print(xor)
-# s = np.where(xor > 0, 0, 1)
-# print (s.sum() / float(len(s)))
+
+# print (len(np.where(sig1 == sig2)) / float(len(sig1))) #jaccard similarity
